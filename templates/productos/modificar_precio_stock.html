@@ -4,29 +4,32 @@
 
 {% block title %}Modificar precios y stock{% endblock %}
 
-<!--Completa el head de la tabla-->
-{% block thead %}
-    <tr class="
-        [&_th]:border-b [&_th]:border-r [&_th]:text-xs">
-        <th>Codigo de barras</th>
-        <th>Descripcion</th>
-        <th>Ultima actualizacion</th>
-        <th>Precio</th>
-        <th>Stock</th>
-        <th class="min-w-[36px]"><img src="{% static 'icons/edit_black_64px.png' %}" alt="edit_black_64px.png" class="w-[14px] mx-auto"></th>
-    </tr>
-{% endblock %}
+{% block table %}
+    <table class="w-full font-mono border-separate border-spacing-[1px]">
+        <thead>
+            <tr class="
+            [&_th]:border [&_th]:text-[12px]">
+                <th>Codigo de barras</th>
+                <th>Descripcion</th>
+                <th>Ult. actualizacion</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th class="min-w-[36px]"><img src="{% static 'icons/edit_black_64px.png' %}" alt="edit_black_64px.png" class="w-[14px] mx-auto"></th>
+            </tr>
+        </thead>
 
-<!--Completa el body de la tabla-->
-{% block tbody %}
-<!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
-    <tbody id="tbodyProductos"
-            hx-get="partials/recargarTablaHTMX_MPS"
-            hx-trigger="recargarTablaMPS from:body"
-            hx-target="this"
-            class="overflow-auto">
-    {% include 'productos/partials/tbody_modificar_precio_stock.html' %}
-    </tbody>
+        <!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
+        <input type="hidden" name="caso" id="metodo_p" value="fechaDescendente"> <!--Para recargar el orden de los productos cuando editamos uno-->
+        <tbody id="tbodyProductos"
+                hx-get="partials/recargarTablaHTMX_MPS"
+                hx-trigger="recargarTablaMPS from:body"
+                hx-target="this"
+                hx-include="#metodo_p"
+                hx-on::after-settle='filtrarProductos(0,1)'
+                class="overflow-visible">
+            {% include 'productos/partials/tbody_modificar_precio_stock.html' %}
+        </tbody>
+    </table>
 {% endblock %}
 
 <!--Completa el div donde van los botones-->
@@ -52,7 +55,7 @@
     <div class="relative p-1 bg-gray-800 text-white text-center rounded grid gap-3">
         <div class="text-[11px] m-0 pl-1 pr-1 flex w-full justify-around ">
             <p>Ordenar por: </p>
-            <input type="hidden" name="metodo_p" id="metodo_p" value="FECHA: D">
+            
             <p id="metodo_ordenamiento" class="ml-2 mr-2 font-bold">FECHA: D</p>
             <img id="trianguloMenu" onclick="mostrar_ordenar_por()" src="{% static 'icons/triangulo.png' %}" alt="triangulo.png" class="w-[12px] cursor-pointer transition-transform duration-50">
         </div>
@@ -117,9 +120,9 @@
         <!--Formulario para buscar productos-->
         <form class="w-full flex-none bg-sky-700 p-2 flex justify-normal rounded-t items-center flex-col gap-2">
             <h2 class="font-bold text-[14px] underline">Filtrar productos</h2>
-            <input oninput="filtrarProductos()" type="text" name="codigo_barra" placeholder="Codigo de barras..."
+            <input oninput="filtrarProductos(0,1)" type="text" name="codigo_barra" placeholder="Codigo de barras..."
                 class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
-            <input oninput="filtrarProductos()" type="text" name="descripcion" placeholder="Descripcion..."
+            <input oninput="filtrarProductos(0,1)" type="text" name="descripcion" placeholder="Descripcion..."
                 class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
         </form>
 

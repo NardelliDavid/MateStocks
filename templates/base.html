@@ -12,12 +12,8 @@
         
         <!--Div que contiene a la tabla-->
         <div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3">
-            <table class="w-full font-mono">
-                <thead>
-                    {% block thead %}{% endblock %}
-                </thead>
-                    {% block tbody %}{% endblock %}
-            </table>
+            {% block table %}
+            {% endblock %}
         </div>
 
         <!--Div que contiene a los botones-->

@@ -3,9 +3,9 @@
     {% for i in productos %}
             <tr id="productoNumero{{ i.id }}"
                 class="text-center
-                [&_td]:border-b [&_td]:border-r [&_td]:text-xs [&_td]:min-h-5">
+                [&_td]:border [&_td]:text-xs [&_td]:min-h-5">
                 {% if i.codigo_barras is null %}
-                    <td class="truncate max-w-[80px] prod{{ i.id }}Original">
+                    <td class="truncate max-w-[80px]">
                         <p class="text-red-600">VACIO</p>
                     </td>
                 {% else %}
@@ -13,21 +13,21 @@
                     <td 
                         onmouseenter="mostrarTextoCompleto('{{ i.id }}', 1)" 
                         onmouseleave="mostrarTextoCompleto('{{ i.id }}', 1)" 
-                        class="relative max-w-[80px]">
+                        class="relative w-[110px]">
                         <p class="truncate">{{ i.codigo_barras }}</p>
                         <div id="mostrarCodigoBarras{{ i.id }}" 
-                            class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-2 max-w-[120px] whitespace-normal break-words hidden">
+                            class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-2 whitespace-normal break-words hidden">
                             {{ i.codigo_barras }}
                         </div>
                     </td>
                 {% endif %}
-                <td class="hidden"></td>
+
                 <td onmouseenter="mostrarTextoCompleto('{{ i.id }}', 2)" 
                     onmouseleave="mostrarTextoCompleto('{{ i.id }}', 2)" 
-                    class="relative max-w-[100px]">
+                    class="relative max-w-[130px]">
                     <p class="truncate ml-[1px]">{{ i.descripcion }}</p>
                     <div id="mostrarDescripcion{{ i.id }}"
-                        class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-2 max-w-[150px] whitespace-normal break-words hidden">
+                        class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-1 w-[100px] hidden">
                         {{ i.descripcion }}
                     </div>
                 </td>

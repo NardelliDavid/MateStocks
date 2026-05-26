@@ -141,33 +141,33 @@ def editar_producto(request):
 # MPS = Modificar precio y stock
 def recargarTablaHTMX_MPS(request):
     if request.method == "GET":
-        caso = request.GET.get("caso")
-        productos = Producto.objects.all()
+        if request.headers.get('HX-Request'): 
+            # Diccionario con los casos
+            ordenamientos = {
+                "fechaAscendente": "ultima_fecha_actualizacion_precio",
+                "fechaDescendente": "-ultima_fecha_actualizacion_precio",
+                "codigoAscendente": "codigo_barras",
+                "codigoDescendente": "-codigo_barras",
+                "descripcionAscendente": "descripcion",
+                "descripcionDescendente": "-descripcion",
+                "precioMayor": "-precio",
+                "precioMenor": "precio",
+                "stockMayor": "-stock",
+                "stockMenor": "stock",
+            }
 
-        if caso == "fechaAscendente":
-            productos = productos.order_by('ultima_fecha_actualizacion_precio')
-        elif caso == "fechaDescendente":
-            productos = productos.order_by('-ultima_fecha_actualizacion_precio')
-        elif caso == 'codigoAscendente':
-            productos = productos.order_by('codigo_barras')
-        elif caso == 'codigoDescendente':
-            productos = productos.order_by('-codigo_barras')
-        elif caso == 'descripcionAscendente':
-            productos = productos.order_by('descripcion')
-        elif caso == 'descripcionDescendente':
-            productos = productos.order_by('-descripcion')
-        elif caso == 'precioMayor':
-            productos = productos.order_by('-precio')
-        elif caso == 'precioMenor':
-            productos = productos.order_by('precio')
-        elif caso == 'stockMayor':
-            productos = productos.order_by('-stock')
-        elif caso == 'stockMenor':
-            productos = productos.order_by('stock')
+            caso = request.GET.get("caso")
+            orden = ordenamientos.get(caso)
 
-        return render(request, "productos/partials/tbody_modificar_precio_stock.html", {
-            "productos": productos, "metodo": caso
-        })
+            if orden: # Si el caso coincide con alguno del diccionario ordena
+                productos = Producto.objects.order_by(orden)
+            else: # En caso de que no trae asi nomas los productos
+                productos = Producto.objects.all()
+                print(caso)
+                
+            return render(request, "productos/partials/tbody_modificar_precio_stock.html", {
+                "productos": productos, "metodo": caso
+            })
 
 def modificar_precio_stock_CRUD(request):
     if request.method == "POST":
