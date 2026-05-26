@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Productos{% endblock %}
+
+<!--Completa el head de la tabla-->
+{% block thead %}
+    <tr class="
+        [&_th]:border-b [&_th]:border-r [&_th]:text-xs">
+        <th>Codigo de barras</th>
+        <th>Descripcion</th>
+        <th>Stock minimo</th>
+        <th>Precio</th>
+        <th class="min-w-[36px]"><img src="{% static 'icons/edit_black_64px.png' %}" alt="edit_black_64px.png" class="w-[14px] mx-auto"></th>
+        <th class="min-w-[36px]"><img src="{% static 'icons/delete_black_64px.png' %}" alt="delete_black_64px.png" class="w-[14px] mx-auto"></th>
+    </tr>
+{% endblock %}
+
+<!--Completa el body de la tabla-->
+{% block tbody %}
+<!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
+    <tbody id="tbodyProductos"
+            hx-get="partials/recargarTablaHTMX"
+            hx-trigger="recargarTabla from:body"
+            hx-target="this"
+            class="overflow-auto">
+    {% include 'productos/partials/tbody_crud_productos.html' %}
+    </tbody>
+{% endblock %}
+
+<!--Completa el div donde van los botones-->
+{% block div_main %}
+    <!--TITULO Y VOLVER-->
+    <div class="p-3 bg-gray-800 text-white text-center rounded grid gap-3 h-[15%]">
+        <h4 class="text-base underline">Agregar, editar y eliminar productos</h4>
+        <a href="#" class="text-sm text-blue-500 underline decoration-blue-500 font-bold"><-- Volver al inicio</a>
+    </div>
+
+    <!--Contenedor de formularios y consola-->
+    <script src="{% static 'javascript/productos/filtro.js' %}"></script>
+    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-between h-[85%]">
+        <!--Formulario para buscar productos-->
+        <form class="w-full flex-none bg-sky-700 p-2 flex justify-normal rounded-t items-center flex-col gap-2">
+            <h2 class="font-bold text-[14px] underline">Filtrar productos</h2>
+            <input oninput="filtrarProductos()" type="text" name="codigo_barra" placeholder="Codigo de barras..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
+            <input oninput="filtrarProductos()" type="text" name="descripcion" placeholder="Descripcion..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
+        </form>
+
+        <!--Consola que muestra los resultados de las consultas-->
+        <div id="resultado_consulta" class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
+            <p class="text-green-600">Resultado de las consultas aqui...</p>
+        </div>
+
+        <!--Formulario para agregar productos-->
+        <form hx-post="agregar_producto" 
+            hx-target="#resultado_consulta"
+            hx-on::after-request="if(!event.detail.xhr.responseText.includes('text-red-600')) this.reset()"
+
+            method="POST" class="w-full bg-sky-700 p-2 flex justify-normal rounded-b items-center flex-col gap-2">
+            {% csrf_token %}
+            <input type="text" name="codigo_barras" placeholder="Codigo de barras..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] italic">
+            <input type="text" name="descripcion" placeholder="Descripcion..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] italic">
+            <input type="text" name="precio" placeholder="Precio..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] italic">
+            <input type="text" name="stock" placeholder="Stock..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] italic">
+            <input type="text" name="stock_minimo" placeholder="Stock minimo..."
+                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] italic">
+            <button class="border border-black bg-yellow-300 italic font-bold text-black text-[13px] p-1 cursor-pointer">AGREGAR PRODUCTO</button>
+        </form>
+
+    </div>
+
+
+{% endblock %}

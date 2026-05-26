@@ -1,0 +1,73 @@
+{% load static %}
+{% if productos %}
+    <script src="{% static 'javascript/productos/mostrar_confirmacion.js' %}"></script>
+    <script src="{% static 'javascript/productos/ver_texto_completo.js' %}"></script>
+    {% for i in productos %}
+            <tr id="productoNumero{{ i.id }}"
+                class="text-center
+                [&_td]:border-b [&_td]:border-r [&_td]:text-xs [&_td]:min-h-5">
+                {% if i.codigo_barras is null %}
+                    <td class="truncate max-w-[80px] prod{{ i.id }}Original">
+                        <p class="text-red-600">VACIO</p>
+                    </td>
+                    <!--Input para editar codigo de barras-->
+                    <td class="truncate max-w-[80px] bg-sky-200 hidden prod{{ i.id }}Nuevo"><input type="text" name="codigo_barras_nuevo" class="text-center m-0 p-0 w-full"></td>
+                {% else %}
+                    <!--Muestra el codigo de barras completo al pasar el mouse sobre el-->
+                    <td 
+                        onmouseenter="mostrarTextoCompleto('{{ i.id }}', 1)" 
+                        onmouseleave="mostrarTextoCompleto('{{ i.id }}', 1)" 
+                        class="relative max-w-[80px] prod{{ i.id }}Original">
+                        <p class="truncate">{{ i.codigo_barras }}</p>
+                        <div id="mostrarCodigoBarras{{ i.id }}" 
+                            class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-2 max-w-[120px] whitespace-normal break-words hidden">
+                            {{ i.codigo_barras }}
+                        </div>
+                    </td>
+                    <!--Input para editar codigo de barras-->
+                    <td class="truncate max-w-[80px] bg-sky-200 hidden prod{{ i.id }}Nuevo"><input type="text" name="codigo_barras_nuevo" value="{{ i.codigo_barras }}" class="text-center m-0 p-0 w-full"></td>
+                {% endif %}
+                <td onmouseenter="mostrarTextoCompleto('{{ i.id }}', 2)" 
+                    onmouseleave="mostrarTextoCompleto('{{ i.id }}', 2)" 
+                    class="relative max-w-[100px] prod{{ i.id }}Original">
+                    <p class="truncate ml-[1px]">{{ i.descripcion }}</p>
+                    <div id="mostrarDescripcion{{ i.id }}"
+                        class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-2 max-w-[150px] whitespace-normal break-words hidden">
+                        {{ i.descripcion }}
+                    </div>
+                </td>
+                <!--Input para editar descripcion-->
+                <td class="truncate max-w-[100px] bg-sky-200 hidden prod{{ i.id }}Nuevo"><input type="text" name="descripcion_nueva" value="{{ i.descripcion }}" class="text-center m-0 p-0 w-full"></td>
+                <td class="truncate max-w-[50px] prod{{ i.id }}Original">{{ i.stock_minimo }}</td>
+                <!--Input para editar stock minimo-->
+                <td class="truncate max-w-[50px] bg-sky-200 hidden prod{{ i.id }}Nuevo"><input type="text" name="stock_minimo_nuevo" value="{{ i.stock_minimo }}" class="text-center m-0 p-0 w-full"></td>
+                    
+                <td class="truncate max-w-22">$ {{ i.precio }}</td>
+                <td>
+                    <img id="editarIcono{{ i.id }}" src="{% static 'icons/edit_blue_64px.png' %}" alt="edit_blue_64px.png" onclick="mostrar_confirmacion(1,'{{ i.id }}')" class="w-[14px] mx-auto cursor-pointer">
+                    <div id="confirmacionEditar{{ i.id }}" class="hidden justify-center gap-1">
+                        <img hx-post="editar_producto"
+                            hx-trigger="click"
+                            hx-target="#resultado_consulta"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-vals='{"id_producto":{{ i.id }}}'
+                            hx-include=".prod{{ i.id }}Nuevo input"
+                        src="{% static 'icons/confirmacion/aceptar.png' %}" alt="aceptar.png" onclick="mostrar_confirmacion(1,'{{ i.id }}')" class="w-[14px] cursor-pointer">
+                        <img src="{% static 'icons/confirmacion/cancelar.png' %}" alt="cancelar.png" onclick="mostrar_confirmacion(1,'{{ i.id }}')" class="w-[14px] cursor-pointer">
+                    </div>
+                </td>
+                <td>
+                    <img id="basuraIcono{{ i.id }}" src="{% static 'icons/delete_red_64px.png' %}" alt="delete_red_64px.png" onclick="mostrar_confirmacion(2,'{{ i.id }}')" class="w-[14px] mx-auto cursor-pointer">
+                    <div id="confirmacionEliminar{{ i.id }}" class="hidden justify-center gap-1">
+                        <img hx-post="eliminar_producto"
+                            hx-trigger="click"
+                            hx-vals='{"id_producto":"{{ i.id }}"}'
+                            hx-target="#resultado_consulta"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                        src="{% static 'icons/confirmacion/aceptar.png' %}" alt="aceptar.png" onclick="mostrar_confirmacion(2,'{{ i.id }}')" class="w-[14px] cursor-pointer">
+                        <img src="{% static 'icons/confirmacion/cancelar.png' %}" alt="cancelar.png" onclick="mostrar_confirmacion(2,'{{ i.id }}')" class="w-[14px] cursor-pointer">
+                    </div>
+                </td>
+            </tr>
+    {% endfor %}
+{% endif %}

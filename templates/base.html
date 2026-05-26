@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body class="bg-gray-500 h-[100vh] w-[100vw] flex justify-center items-center">
+    <main class="aspect-square h-[90vh] bg-white grid grid-cols-4 gap-5 p-5">
+        
+        <!--Div que contiene a la tabla-->
+        <div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3">
+            <table class="w-full font-mono">
+                <thead>
+                    {% block thead %}{% endblock %}
+                </thead>
+                    {% block tbody %}{% endblock %}
+            </table>
+        </div>
+
+        <!--Div que contiene a los botones-->
+        <div class="col-span-1 gap-3 flex flex-col justify-between ">
+            {% block div_main %}{% endblock %}
+        </div>
+
+    </main>
+</body>
+</html>
