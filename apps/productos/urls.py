@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("crud_productos", views.crud_productos, name="crud_productos"),
-    path("modificar_precio_stock", views.modificar_precio_stock, name="modificar_precio_stock"),
+    path("crud_productos", views.crud_productos, name="crud_productos"), # PAGINA DE CRUD_PRODUCTOS
+    path("modificar_precio_stock", views.modificar_precio_stock, name="modificar_precio_stock"), # PAGINA PARA MODIFICAR EL PRECIO Y STOCK
     path("agregar_producto", views.agregar_producto, name="agregar_producto"),
     path("partials/recargarTablaHTMX", views.recargarTablaHTMX, name="recargarTablaHTMX"),
     path("partials/recargarTablaHTMX_MPS", views.recargarTablaHTMX_MPS, name="recargarTablaHTMX_MPS"),

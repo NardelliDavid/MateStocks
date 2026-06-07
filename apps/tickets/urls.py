@@ -2,5 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.index)
+    path("", views.index, name="index"),
+    path("tickets/agregar_producto_ticket", views.agregar_producto_ticket, name="agregar_producto_ticket"),
+    path("tickets/buscar_producto_ticket", views.buscar_producto_ticket, name="buscar_producto_ticket"),
+    path("tickets/recargarTablaIndex", views.recargarTablaIndex, name='recargarTablaIndex'),
+    path("tickets/quitarProductoDelTicket", views.quitarProductoDelTicket, name='quitarProductoDelTicket')
 ]
