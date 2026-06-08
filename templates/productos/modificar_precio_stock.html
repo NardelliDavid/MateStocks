@@ -5,6 +5,7 @@
 {% block title %}Modificar precios y stock{% endblock %}
 
 {% block table %}
+<div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col justify-between">
     <table class="w-full font-mono border-separate border-spacing-[1px]">
         <thead>
             <tr class="
@@ -30,10 +31,8 @@
             {% include 'productos/partials/tbody_modificar_precio_stock.html' %}
         </tbody>
     </table>
-{% endblock %}
-
-<!--Completa el div donde van los botones-->
-{% block div_main %}
+</div>
+<div class="col-span-1 gap-3 flex flex-col justify-between ">
     <script src="{% static 'javascript/productos/mostrar_confirmacion.js' %}"></script>
     <script src="{% static 'javascript/productos/ver_texto_completo.js' %}"></script>
     <!--TITULO Y VOLVER-->
@@ -116,21 +115,20 @@
 
     <!--Contenedor de formularios y consola-->
     <script src="{% static 'javascript/productos/filtro.js' %}"></script>
-    <div class="bg-gray-800 text-white text-center rounded flex flex-col h-[80%]">
-        <!--Formulario para buscar productos-->
-        <form class="w-full flex-none bg-sky-700 p-2 flex justify-normal rounded-t items-center flex-col gap-2">
-            <h2 class="font-bold text-[14px] underline">Filtrar productos</h2>
-            <input oninput="filtrarProductos(0,1)" type="text" name="codigo_barra" placeholder="Codigo de barras..."
-                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
-            <input oninput="filtrarProductos(0,1)" type="text" name="descripcion" placeholder="Descripcion..."
-                class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
-        </form>
+        <div class="bg-gray-800 text-white text-center rounded flex flex-col h-[80%]">
+            <!--Formulario para buscar productos-->
+            <form class="w-full flex-none bg-sky-700 p-2 flex justify-normal rounded-t items-center flex-col gap-2">
+                <h2 class="font-bold text-[14px] underline">Filtrar productos</h2>
+                <input oninput="filtrarProductos(0,1)" type="text" name="codigo_barra" placeholder="Codigo de barras..."
+                    class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
+                <input oninput="filtrarProductos(0,1)" type="text" name="descripcion" placeholder="Descripcion..."
+                    class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
+            </form>
 
-        <!--Consola que muestra los resultados de las consultas-->
-        <div id="resultado_consulta" class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
-            <p class="text-green-600">Resultado de las consultas aqui...</p>
-        </div>
+            <!--Consola que muestra los resultados de las consultas-->
+            <div id="resultado_consulta" class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
+                <p class="text-green-600">Resultado de las consultas aqui...</p>
+            </div>
 
-    </div>
-
+</div>
 {% endblock %}

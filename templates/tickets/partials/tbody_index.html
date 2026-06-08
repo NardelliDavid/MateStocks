@@ -1,27 +1,57 @@
-{% load static %}
-{% if sesionProductos %}
-    {% for producto in sesionProductos %}
-        <tr class="
-            [&_td]:border [&_td]:text-[12px]">
-            <td>{{ producto.codigo_barras }}</td>
-            <td>{{ producto.descripcion }}</td>
-            <td>{{ producto.precio }}</td>
-            <td>{{ producto.cantidad }}</td>
-            {% if producto.stock <= producto.stock_minimo %}
-                <td class="font-bold text-yellow-400 border-black">{{ producto.stock }}</td>
-            {% else %}
-                <td>{{ producto.stock }}</td>
-            {% endif %}
-            <td>
-                <img id="basuraIcono{{ producto.id }}" src="{% static 'icons/delete_red_64px.png' %}" alt="delete_red_64px.png" onclick="mostrar_confirmacion(2,'{{ producto.id }}')" class="w-[14px] mx-auto cursor-pointer">
-                <div id="confirmacionEliminar{{ producto.id }}" class="hidden justify-center gap-1">
-                    <img hx-get="tickets/quitarProductoDelTicket"
-                        hx-trigger="click"
-                        hx-vals='{"id":{{ producto.id }}}'
-                    src="{% static 'icons/confirmacion/aceptar.png' %}" alt="aceptar.png" onclick="mostrar_confirmacion(2,'{{ producto.id }}')" class="w-[14px] cursor-pointer">
-                    <img src="{% static 'icons/confirmacion/cancelar.png' %}" alt="cancelar.png" onclick="mostrar_confirmacion(2,'{{ producto.id }}')" class="w-[14px] cursor-pointer">
-                </div>
-            </td>
-        </tr>
-    {% endfor %}
-{% endif %}
+{% load static %} {% if sesionProductos %} {% for producto in sesionProductos %}
+<tr class="[&_td]:border [&_td]:text-[12px]">
+  <td>{{ producto.codigo_barras }}</td>
+  <td
+    onmouseenter="mostrarTextoCompleto('{{ producto.id }}', 2)"
+    onmouseleave="mostrarTextoCompleto('{{ producto.id }}', 2)"
+    class="relative max-w-[130px] prod{{ i.id }}Original"
+  >
+    <p class="truncate">{{ producto.descripcion }}</p>
+    <div
+      id="mostrarDescripcion{{ producto.id }}"
+      class="border border-gray-300 z-40 rounded absolute left-full top-[-10px] text-[12px] bg-gray-100 p-1 w-[100px] hidden"
+    >
+      {{ producto.descripcion }}
+    </div>
+  </td>
+  <td class="precioProducto flex w-full justify-center">
+    $
+    <p>{{ producto.precio }}</p>
+  </td>
+  <td class="cantidadProducto">{{ producto.cantidad }}</td>
+  {% if producto.stock <= producto.stock_minimo %}
+  <td class="font-bold text-yellow-400 border-black">{{ producto.stock }}</td>
+  {% else %}
+  <td>{{ producto.stock }}</td>
+  {% endif %}
+  <td>
+    <img
+      id="basuraIcono{{ producto.id }}"
+      src="{% static 'icons/delete_red_64px.png' %}"
+      alt="delete_red_64px.png"
+      onclick="mostrar_confirmacion(2,'{{ producto.id }}')"
+      class="w-[14px] mx-auto cursor-pointer"
+    />
+    <div
+      id="confirmacionEliminar{{ producto.id }}"
+      class="hidden justify-center gap-1"
+    >
+      <img
+        hx-get="tickets/quitarProductoDelTicket"
+        hx-trigger="click"
+        hx-vals='{"id":{{ producto.id }}}'
+        src="{% static 'icons/confirmacion/aceptar.png' %}"
+        alt="aceptar.png"
+        onclick="mostrar_confirmacion(2,'{{ producto.id }}')"
+        class="w-[14px] cursor-pointer"
+      />
+      <img
+        src="{% static 'icons/confirmacion/cancelar.png' %}"
+        alt="cancelar.png"
+        onclick="mostrar_confirmacion(2,'{{ producto.id }}')"
+        class="w-[14px] cursor-pointer"
+      />
+    </div>
+  </td>
+</tr>
+{% endfor %} {% endif %}

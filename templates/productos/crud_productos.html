@@ -5,33 +5,33 @@
 {% block title %}Productos{% endblock %}
 
 {% block table %}
-<table class="w-full font-mono border-separate border-spacing-[1px]">
-    <thead>
-        <tr class="
-        [&_th]:border [&_th]:text-xs">
-            <th>Codigo de barras</th>
-            <th>Descripcion</th>
-            <th>Stock min.</th>
-            <th>Precio</th>
-            <th class="min-w-[36px]"><img src="{% static 'icons/edit_black_64px.png' %}" alt="edit_black_64px.png" class="w-[14px] mx-auto"></th>
-            <th class="min-w-[36px]"><img src="{% static 'icons/delete_black_64px.png' %}" alt="delete_black_64px.png" class="w-[14px] mx-auto"></th>
-        </tr>
-</thead>
+<div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col justify-between">
+    <table class="w-full font-mono border-separate border-spacing-[1px]">
+        <thead>
+            <tr class="
+            [&_th]:border [&_th]:text-xs">
+                <th>Codigo de barras</th>
+                <th>Descripcion</th>
+                <th>Stock min.</th>
+                <th>Precio</th>
+                <th class="min-w-[36px]"><img src="{% static 'icons/edit_black_64px.png' %}" alt="edit_black_64px.png" class="w-[14px] mx-auto"></th>
+                <th class="min-w-[36px]"><img src="{% static 'icons/delete_black_64px.png' %}" alt="delete_black_64px.png" class="w-[14px] mx-auto"></th>
+            </tr>
+        </thead>
 
-<!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
-<tbody id="tbodyProductos"
-        hx-get="partials/recargarTablaHTMX"
-        hx-trigger="recargarTabla from:body"
-        hx-target="this"
-        hx-on::after-settle='filtrarProductos(0,2)'
-        class="overflow-auto">
-    {% include 'productos/partials/tbody_crud_productos.html' %}
-</tbody>
-</table>
-{% endblock %}
+        <!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
+        <tbody id="tbodyProductos"
+                hx-get="partials/recargarTablaHTMX"
+                hx-trigger="recargarTabla from:body"
+                hx-target="this"
+                hx-on::after-settle='filtrarProductos(0,2)'
+                class="overflow-auto">
+            {% include 'productos/partials/tbody_crud_productos.html' %}
+        </tbody>
+    </table>
+</div>
 
-<!--Completa el div donde van los botones-->
-{% block div_main %}
+<div class="col-span-1 gap-3 flex flex-col justify-between ">
     <!--TITULO Y VOLVER-->
     <div class="p-3 bg-gray-800 text-white text-center rounded grid gap-3 h-[15%]">
         <h4 class="text-base underline">Agregar, editar y eliminar productos</h4>
@@ -77,5 +77,5 @@
 
     </div>
 
-
+</div>
 {% endblock %}

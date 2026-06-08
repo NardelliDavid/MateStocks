@@ -1,119 +1,183 @@
-{% extends "base.html" %}
-
-{% load static %}
-
-{% block title %}INICIO{% endblock %}
-
+{% extends "base.html" %} 
+{% load static %} 
+{% block title %}INICIO{% endblock %} 
 {% block table %}
-    <table class="w-full font-mono border-separate border-spacing-[1px]">
-        <thead>
-            <tr class="
-            [&_th]:border [&_th]:text-[12px]">
-                <th class="w-[120px]">Codigo de barras</th>
-                <th>Descripcion</th>
-                <th class="w-[60px]">Precio</th>
-                <th class="w-[65px]">Cantidad</th>
-                <th class="w-[45px]">Stock</th>
-                <th class="w-[36px]"><img src="{% static 'icons/delete_black_64px.png' %}" alt="delete_black_64px.png" class="w-[14px] mx-auto"></th>
-            </tr>
-        </thead>
+<script src="{% static 'javascript/productos/ver_texto_completo.js' %}"></script>
 
-        <!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
-        <tbody id="tbodyindex"
-                hx-get="tickets/recargarTablaIndex"
-                hx-trigger="recargarTablaTicket from:body"
-                hx-target="this"
-                class="overflow-visible text-center">
-            {% include 'tickets/partials/tbody_index.html' %}
-        </tbody>
-    </table>
-{% endblock %}
+<div
+  class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col justify-between relative"
+>
+  <table class="w-full font-mono border-separate border-spacing-[1px]">
+    <thead>
+      <tr class="[&_th]:border [&_th]:text-[12px]">
+        <th class="w-[120px]">Codigo de barras</th>
+        <th>Descripcion</th>
+        <th class="w-[80px]">Precio</th>
+        <th class="w-[65px]">Cantidad</th>
+        <th class="w-[45px]">Stock</th>
+        <th class="w-[36px]">
+          <img
+            src="{% static 'icons/delete_black_64px.png' %}"
+            alt="delete_black_64px.png"
+            class="w-[14px] mx-auto"
+          />
+        </th>
+      </tr>
+    </thead>
 
-<!--Completa el div donde van los botones-->
-{% block div_main %}
-    <script src="{% static 'javascript/productos/mostrar_confirmacion.js' %}"></script>
-    <script src="{% static 'javascript/productos/ver_texto_completo.js' %}"></script>
-    <script src="{% static 'javascript/tickets/crecer_decrecer_valor.js' %}"></script>
-    <script src="{% static 'javascript/tickets/contarP.js' %}"></script>
-    <!--TITULO Y VOLVER-->
-    <div class="p-1 bg-gray-800 text-white text-center rounded grid h-[15%]">
-        <div class="text-[17px] m-0 p-0 flex justify-center items-center flex-col">
-            <div class="flex w-full justify-center gap-2 items-center">
-                <img src="{% static 'icons/warning/advertencia_amarillo.png' %}" alt="advertencia_amarillo.png" class="w-[30px] h-[30px]">
-                <p>Stock bajo: 00</p>
-            </div>
-            <div class="flex w-full justify-center items-center gap-2">
-                <img src="{% static 'icons/warning/advertencia_rojo.png' %}" alt="advertencia_rojo.png" class="w-[30px] h-[30px]">
-                <p>Stock nulo: 00</p>
-            </div>
+    <!--Realiza una peticion GET a esa url cuando escucha el trigger "recargarTabla" y lo vuelca adentro del tbody-->
+    <tbody
+      id="tbodyindex"
+      hx-get="tickets/recargarTablaIndex"
+      hx-trigger="recargarTablaTicket from:body"
+      hx-target="this"
+      hx-on::after-settle="costoTotal()"
+      class="overflow-visible text-center"
+    >
+      {% include 'tickets/partials/tbody_index.html' %}
+    </tbody>
+  </table>
+
+  <div
+    class="w-full bg-gray-200 grid grid-cols-10 p-2 border-r-1 border-t-1 sticky bottom-0"
+  >
+    <div
+      class="flex flex-col col-span-3 gap-3 [&_button]:rounded [&_button]:p-2 [&_button]:text-[20px] [&_button]:cursor-pointer [&_button]:shadow-2xl [&_button]:text-shadow-2xl"
+    >
+      <button class="bg-sky-400 text-white hover:bg-sky-600">CREAR TICKET</button>
+      <button
+        hx-get="tickets/vaciarTicket"
+        hx-trigger="click"
+        hx-target="#resultado_consulta"
+        class="bg-red-600 text-white hover:bg-red-800"
+      >
+        VACIAR TICKET
+      </button>
+    </div>
+    <div class="text-[30px] text-center flex justify-center items-center col-span-7 text-shadow-lg font-bold">
+      <p>COSTO TOTAL: $</p>
+      <p id="costoTotalTexto" class="text-green-600"></p>
+    </div>
+  </div>
+</div>
+<div class="col-span-1 gap-3 flex flex-col justify-between">
+  <!--Funcion que calcula el costo total de todos los productos en el ticket-->
+  <script src="{% static 'javascript/tickets/costoTotal.js' %}"></script>
+  <script>
+    costoTotal();
+  </script>
+
+  <script src="{% static 'javascript/productos/mostrar_confirmacion.js' %}"></script>
+  <script src="{% static 'javascript/productos/ver_texto_completo.js' %}"></script>
+  <script src="{% static 'javascript/tickets/crecer_decrecer_valor.js' %}"></script>
+  <script src="{% static 'javascript/tickets/contarP.js' %}"></script>
+
+  <div
+    class="bg-gray-800 text-white text-center rounded flex flex-col justify-between h-[100%]"
+  >
+    <!--FORMULARIO PARA AGREGAR PRODUCTOS AL TICKET -->
+    <div class="w-full rounded-t bg-sky-900">
+      <form
+        hx-post="tickets/agregar_producto_ticket"
+        hx-target="#resultado_consulta"
+        hx-vals="js:{ cantidadP: contarP() }"
+        class="w-full flex-none p-2 flex justify-normal rounded-t items-center flex-col gap-2"
+      >
+        {% csrf_token %}
+        <div>
+          <h2 class="font-bold text-[14px] underline">
+            AGREGAR PRODUCTO AL TICKET
+          </h2>
+          <p class="text-[11px]">
+            Puede ser por codigo de barras, descripcion o ambos.
+          </p>
         </div>
-        <a href="#" class="text-sm text-gray-500 underline hover:decoration-gray-500 font-bold">Guardado en la nube</a>
+
+        <!--INPUTS QUE BUSCAN EL PRODUCTO PARA AGREGAR AL TICKET-->
+        <input
+          hx-get="tickets/buscar_producto_ticket"
+          hx-trigger="keyup delay:400ms"
+          hx-target="#resultadoBusqueda"
+          hx-include="[name='descripcion']"
+          type="text"
+          name="codigo_barra"
+          placeholder="Codigo de barras..."
+          class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400"
+        />
+        <input
+          hx-get="tickets/buscar_producto_ticket"
+          hx-trigger="keyup delay:400ms"
+          hx-target="#resultadoBusqueda"
+          hx-include="[name='codigo_barra']"
+          type="text"
+          name="descripcion"
+          placeholder="Descripcion..."
+          class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400"
+        />
+
+        <!--Input para la cantidad del mismo producto-->
+        <div
+          id="inputNumberProducto"
+          class="bg-blue-300 p-[1px] rounded flex justify-center items-center w-full [&_img]:w-[15px] [&_img]:cursor-pointer"
+        >
+          <img
+            src="{% static 'icons/triangulo.png' %}"
+            alt="trianguloIzquierda"
+            onclick="decrecer_valor()"
+          />
+          <input
+            type="number"
+            name="cantidad_producto"
+            id="cantidad_producto"
+            value="1"
+            class="w-full text-[12px] text-black p-0 m-0 appearance-none outline-none text-center"
+          />
+          <img
+            src="{% static 'icons/triangulo.png' %}"
+            alt="trianguloDerecha"
+            onclick="crecer_valor()"
+            class="rotate-180"
+          />
+        </div>
+
+        <!--Boton para agregar al ticket-->
+        <button
+          class="text-[14px] w-full rounded p-1 cursor-pointer bg-blue-500"
+        >
+          AGREGAR AL TICKET
+        </button>
+      </form>
+
+      <!--MUESTRA LOS PRODUCTOS ENCONTRADOS POR LOS INPUTS-->
+      <div class="w-[100%] pl-2 pr-2">
+        <div
+          id="resultadoBusqueda"
+          class="text-black text-[13px] w-[100%] min-h-[40px] bg-white border border-gray-200 rounded"
+        ></div>
+      </div>
+
+      <!--Consola que muestra los resultados de las consultas-->
+      <div
+        id="resultado_consulta"
+        class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]"
+      >
+        <p class="text-green-600">Resultado de las consultas aqui...</p>
+      </div>
     </div>
 
-    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-between h-[85%]">
-        <!--FORMULARIO PARA AGREGAR PRODUCTOS AL TICKET -->
-        <div class="w-full rounded-t bg-sky-900">
-            <form hx-post="tickets/agregar_producto_ticket"
-                    hx-target="#resultado_consulta"
-                    hx-vals="js:{ cantidadP: contarP() }"
-                class="w-full flex-none p-2 flex justify-normal rounded-t items-center flex-col gap-2">
-                {% csrf_token %}
-                <div>
-                    <h2 class="font-bold text-[14px] underline">AGREGAR PRODUCTO AL TICKET</h2>
-                    <p class="text-[11px]">Puede ser por codigo de barras, descripcion o ambos.</p>
-                </div>
-                
-                <!--INPUTS QUE BUSCAN EL PRODUCTO PARA AGREGAR AL TICKET-->
-                <input hx-get="tickets/buscar_producto_ticket"
-                        hx-trigger="keyup delay:400ms"
-                        hx-target="#resultadoBusqueda"
-                        hx-include="[name='descripcion']"
-                    type="text" name="codigo_barra" placeholder="Codigo de barras..."
-                    class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
-                <input hx-get="tickets/buscar_producto_ticket"
-                        hx-trigger="keyup delay:400ms"
-                        hx-target="#resultadoBusqueda"
-                        hx-include="[name='codigo_barra']"
-                    type="text" name="descripcion" placeholder="Descripcion..."
-                    class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400">
-
-                <!--Input para la cantidad del mismo producto-->
-                <div id="inputNumberProducto" 
-                    class="bg-blue-300 p-[1px] rounded flex justify-center items-center w-full
-                        [&_img]:w-[15px] [&_img]:cursor-pointer">
-                    <img src="{% static 'icons/triangulo.png' %}" alt="trianguloIzquierda" onclick="decrecer_valor()">
-                    <input type="number" name="cantidad_producto" id="cantidad_producto" value="1" class="w-full text-[12px] text-black p-0 m-0 appearance-none outline-none text-center">
-                    <img src="{% static 'icons/triangulo.png' %}" alt="trianguloDerecha" onclick="crecer_valor()" class="rotate-180">
-                </div>
-
-                <!--Boton para agregar al ticket-->
-                <button class="text-[14px] w-full rounded p-1 cursor-pointer bg-blue-500">AGREGAR AL TICKET</button>
-            </form>
-
-                <!--Boton para crear el ticket-->
-            <div class="w-full pl-2 pr-2">
-                <button class="text-[14px] w-full rounded p-1 cursor-pointer bg-sky-500 font-bold">CREAR TICKET</button>
-            </div>
-
-            <!--Consola que muestra los resultados de las consultas-->
-            <div id="resultado_consulta" class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
-                <p class="text-green-600">Resultado de las consultas aqui...</p>
-            </div>
-
-            <!--MUESTRA LOS PRODUCTOS ENCONTRADOS POR LOS INPUTS-->
-            <div class="w-[100%] pl-2 pr-2">
-                 <div id="resultadoBusqueda" class="text-black text-[13px] w-[100%] relative">
-                
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col justify-center items-center text-[14px] p-2 gap-2 
-            [&_a]:rounded [&_a]:p-1 [&_a]:w-full">
-            <a href="productos/modificar_precio_stock" class="bg-yellow-400 text-black">Modificar precios y stock</a>
-            <a href="productos/crud_productos" class="bg-green-800">Eliminar, editar o agregar productos</a>
-            <a href="#" class="bg-green-600">Ver historial de tickets</a>
-        </div>
-        
+    <div
+      class="flex flex-col justify-center items-center text-[14px] p-2 gap-2 [&_a]:rounded [&_a]:p-1 [&_a]:w-full"
+    >
+      <a
+        href="productos/modificar_precio_stock"
+        class="bg-yellow-400 text-black hover:bg-yellow-500"
+        >Modificar precios y stock</a
+      >
+      <a href="productos/crud_productos" class="bg-green-800 hover:bg-green-900"
+        >Eliminar, editar o agregar productos</a
+      >
+      <a href="#" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
     </div>
+  </div>
+</div>
 {% endblock %}

@@ -41,7 +41,7 @@ def buscar_producto_ticket(request):
                 producto = Producto.objects.filter(codigo_barras__icontains=codigo_barra_validado, descripcion__icontains=desc_validada)
 
             # DEVUELVE LA RESPUESTA AL FRONTEND
-            respuesta = '<div class="bg-white w-[100%] max-h-[100px] overflow-auto border border-gray-200 rounded absolute">'
+            respuesta = '<div class="bg-white w-[100%] max-h-[70px] overflow-auto rounded">'
             if producto.exists():
                 for i in producto:
                     respuesta += '<p class="border-b border-gray-200">'+str(i.codigo_barras)+'<br>'+str(i.descripcion)+'</p>'
@@ -87,7 +87,7 @@ def agregar_producto_ticket(request):
                 return HttpResponse('<p class="text-red-600">Hay demasiados productos seleccionados! Complete la descripcion o codigo hasta que quede uno solo.</p>')
             else: # Si encuentra uno solo lo agrega a la variable de sesion
 
-                # Busca el producto en la base de datos y trae la descripcion, codigo de barras y el stock
+                # Busca el producto en la base de datos
                 if desc_validada != None and codigo_barra_validado != None:
                     consulta = Producto.objects.filter(codigo_barras__icontains=codigo_barra_validado, 
                                                        descripcion__icontains=desc_validada).first()
@@ -166,12 +166,21 @@ def quitarProductoDelTicket(request): # Quita el producto del ticket
             for producto in productosTicket:
                 if producto.get('id') != idProducto:
                     nuevoProductosTicket.append(producto)
-            #request.session.clear()
+            
             
             # Reemplazo el array original por el nuevo
             request.session['productosDiccionario'] = nuevoProductosTicket
             request.session.modified = True
 
             response = HttpResponse()
+            response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
+            return response
+        
+def vaciarTicket(request): # Vacia el ticket que estamos haciendo
+    if request.method == "GET":
+        if request.headers.get('HX-Request'):
+            request.session.flush()
+
+            response = HttpResponse('<p class="text-green-600">Ticket vaciado!</p>')
             response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
             return response
