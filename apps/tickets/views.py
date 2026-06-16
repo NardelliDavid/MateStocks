@@ -2,7 +2,13 @@
 from django.shortcuts import render, redirect
 from .validators import *
 from django.http import HttpResponse
+from django.views.decorators.cache import never_cache
 from apps.productos.models import Producto
+from apps.tickets.models import Tickets, Detalle_ticket
+from django.db import transaction
+from django.db.models import F
+
+@never_cache
 
 # Create your views here.
 def index(request):
@@ -78,13 +84,13 @@ def agregar_producto_ticket(request):
             
             # Si ambos campos estan vacios
             if desc_validada == None and codigo_barra_validado == None:
-                return HttpResponse('<p class="text-red-600">Ambos campos estan vacios!</p>')
+                return HttpResponse(msgError("Ambos campos estan vacios!"))
             
             # Lista el producto agregandolo a las variables de sesion
             if cantidadP == 0: # Si no encuentra productos en la base de datos devuelve un mensaje de error
-                return HttpResponse('<p class="text-red-600">No hay productos seleccionados!</p>')
+                return HttpResponse(msgError("No hay productos seleccionados!"))
             elif cantidadP != 1: # Si encuentra muchos productos el buscador devuelve un mensaje de error
-                return HttpResponse('<p class="text-red-600">Hay demasiados productos seleccionados! Complete la descripcion o codigo hasta que quede uno solo.</p>')
+                return HttpResponse(msgError("Hay demasiados productos seleccionados! Complete la descripcion o codigo hasta que quede uno solo"))
             else: # Si encuentra uno solo lo agrega a la variable de sesion
 
                 # Busca el producto en la base de datos
@@ -96,15 +102,15 @@ def agregar_producto_ticket(request):
                 elif desc_validada == None and codigo_barra_validado != None:
                     consulta = Producto.objects.filter(codigo_barras__icontains=codigo_barra_validado).first()
                 else:
-                    return HttpResponse('<p class="text-red-600">Error</p>')
+                    return HttpResponse(msgError("Error"))
                 
                 # Si no encuentra productos
                 if consulta is None:
-                    return HttpResponse('<p class="text-red-600">Producto no encontrado!</p>')
+                    return HttpResponse(msgError("Producto no encontrado!"))
 
                 # Si el stock es menor a la cantidad solicitada
                 if cant_validada > consulta.stock:
-                    return HttpResponse('<p class="text-red-600">No hay suficiente stock!</p>')
+                    return HttpResponse(msgError("No hay suficiente stock!"))
                 
                 # Obtiene la variable de sesion productosDiccionario
                 sesionProductos = request.session.get("productosDiccionario", []) 
@@ -116,7 +122,7 @@ def agregar_producto_ticket(request):
                         cant_total = producto["cantidad"] + cant_validada
                         # Si la cantidad total supera el stock en la base de datos devuelve un mensaje de error
                         if cant_total > consulta.stock:
-                            return HttpResponse('<p class="text-red-600">No hay suficiente stock!</p>')
+                            return HttpResponse(msgError("No hay suficiente stock!"))
                         else: # En caso contrario aumenta la cantidad
                             producto["cantidad"] = cant_total
                             encontrado = True
@@ -140,7 +146,7 @@ def agregar_producto_ticket(request):
                     request.session["productosDiccionario"] = sesionProductos
                     request.session.modified = True
                 
-                response = HttpResponse('<p class="text-green-600">Producto agregado correctamente al ticket!</p>')
+                response = HttpResponse(msgCorrecto("Producto agregado correctamente al ticket!"))
                 response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
                 return response
 
@@ -181,6 +187,84 @@ def vaciarTicket(request): # Vacia el ticket que estamos haciendo
         if request.headers.get('HX-Request'):
             request.session.flush()
 
-            response = HttpResponse('<p class="text-green-600">Ticket vaciado!</p>')
+            response = HttpResponse(msgCorrecto("Ticket vaciado!"))
             response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
             return response
+
+
+
+# VISTAS PARA EL TICKET CREADO
+#-------------------------------------------------------
+
+def ticketCreado(request):
+    if request.method == "POST":
+        if request.headers.get('HX-Request'):
+
+            productosTicket = request.session.get('productosDiccionario', [])
+            if productosTicket == []:
+                return HttpResponse(msgError("No hay productos agregados al ticket!"))
+    
+            # Verifico el Stock de cada producto
+        
+            stockModificado = False
+            msgStock = 'No hay suficiente stock de: <br>'
+            for producto in productosTicket:
+                stockDB = Producto.objects.get(id=producto["id"])
+
+                if stockDB.stock < producto["cantidad"]:
+                    msgStock += str(producto["descripcion"])+'<br>'
+                    stockModificado = True
+            msgStock = msgError(msgStock)
+
+            # Si hay productos que tienen menos stock del solicitado devuelve un mensaje de error
+            if stockModificado == True:
+                return HttpResponse(msgStock)
+            else: # Caso contrario crea el ticket
+                metodoPago = request.POST.get("metodoPago")
+                costoTotal = Decimal(request.POST.get("costoTotal"))
+                
+                with transaction.atomic():
+                    # Crea el ticket
+                    ticket = Tickets.objects.create(
+                        metodo_pago = metodoPago,
+                        total = costoTotal
+                    )
+                    # Crea los detalles del ticket
+                    for producto in productosTicket:
+                        Detalle_ticket.objects.create(
+                            id_ticket = ticket.id,
+                            codigo_barras = producto["codigo_barras"],
+                            descripcion = producto["descripcion"],
+                            cantidad = producto["cantidad"],
+                            precio_unitario = Decimal(producto["precio"])
+                        )
+                    # Reduce el stock en la base de datos
+                    for producto in productosTicket:
+                        Producto.objects.filter(id=producto["id"]).update(stock=F('stock') - producto["cantidad"])
+                        
+                request.session.flush()
+
+                response = HttpResponse()
+                response['HX-Redirect'] = f'tickets/verTicket/{ticket.id}'
+                return response
+            
+# VISTA PARA VER LOS TICKETS            
+def verTicket(request, id_ticket):
+    if request.method == "GET":
+
+        ticket = Tickets.objects.get(id=id_ticket)
+        detalles_ticket = Detalle_ticket.objects.filter(id_ticket=id_ticket)
+
+        return render(request, "tickets/verTicket.html", {
+            "ticket": ticket,
+            "detalles_ticket": detalles_ticket
+        })
+    
+def historial_tickets(request):
+    if request.method == "GET":
+
+        return render(request, "tickets/historial_tickets.html", {
+            "tickets": "hola"
+        })
+
+    

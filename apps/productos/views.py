@@ -3,9 +3,13 @@ from apps.productos.models import Producto
 from django.http import HttpResponse
 from .validators import *
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
+
+@never_cache
 
 # Create your views here.
 def crud_productos(request):
+    request.session.flush()
     productos = Producto.objects.all()
 
     return render(request, "productos/crud_productos.html", {
@@ -13,6 +17,7 @@ def crud_productos(request):
     })
 
 def modificar_precio_stock(request):
+    request.session.flush()
     productos = Producto.objects.all().order_by('-ultima_fecha_actualizacion_precio')
 
     return render(request, "productos/modificar_precio_stock.html", {

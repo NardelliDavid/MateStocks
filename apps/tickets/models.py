@@ -8,7 +8,7 @@ class Tickets(models.Model):
 
 class Detalle_ticket(models.Model):
     id_ticket = models.IntegerField()
-    codigo_barras = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    codigo_barras = models.CharField(max_length=50, null=True, blank=True)
     descripcion = models.CharField(max_length=150)
     cantidad = models.IntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)

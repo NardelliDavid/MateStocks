@@ -1,0 +1,94 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block title %}Ticket creado{% endblock %} 
+
+{% block table %}
+<div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col relative">
+  <div class="flex flex-col justify-center items-center">
+    <h1>=================================================</h1>
+    <p>SUPERCHINO2</p>
+    <p>Av. Hipolito Yrigoyen 1234</p>
+    <p>Tel: 12-3456-7890</p>
+    <p>CUIT: 12-34567890-0</p>
+    <h1>=================================================</h1>
+  </div>
+  <div class="w-full flex flex-col justify-center pl-6">
+    <p>Ticket N°: {{ ticket.id }}</p>
+    <p>Fecha y hora: {{ ticket.fecha_y_hora }}</p>
+    <h1>------------------------------------------------------------------------------------</h1>
+  </div>
+  <table class="text-center">
+    <thead class="font-bold">
+        <tr>
+            <td>DESCRIPCION</td>
+            <td>CANTIDAD</td>
+            <td>PRECIO</td>
+            <td>SUBTOTAL</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in detalles_ticket %}
+            <tr>
+                <td class="max-w-[150px]">{{ producto.descripcion }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>{{ producto.precio_unitario }}</td>
+                <td>ACA VA EL SUBTOTAL</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+  <div class="w-full flex flex-col justify-center pl-6">
+    <h1>------------------------------------------------------------------------------------</h1>
+    <p class="font-bold" id="costoTotal"></p>
+    <p>Metodo de pago: {{ ticket.metodo_pago }}</p>
+  </div>
+  <div class="w-full flex flex-col justify-center items-center pl-4">
+    <h1>=================================================</h1>
+    <h1 class="text-center text-[23px]">GRACIAS POR SU COMPRA<br>
+        VUELVA PRONTO</h1>
+    <h1>=================================================</h1>
+  </div>
+  
+</div>
+
+<!--INSERTA EL SUBTOTAL EN LA TABLA-->
+<script src="{% static 'javascript/tickets/costoTotal.js' %}"></script>
+  <script>
+    actualizarTotalesTicket()
+  </script>
+
+<div class="col-span-1 gap-3 flex flex-col justify-between">
+    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-center h-[9%]">
+        <h4 class="text-base underline">TICKET CREADO</h4>
+        <a href="/" class="text-sm text-blue-500 underline decoration-blue-500 font-bold"><-- Volver al inicio</a>
+    </div>
+
+    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-between h-[91%]">
+        <div class="w-full grid gap-3 p-3 text-black
+            [&_button]:bg-gray-300 [&_button]:p-1 [&_button]:rounded [&_button]:w-full [&_button]:cursor-pointer [&_button]:text-[14px] [&_button]:hover:bg-gray-400">
+            <button disabled>
+                <p>Imprimir ticket</p>
+            </button>
+            <button class="flex justify-center items-center">
+                <p>Descargar en PDF</p>
+                <img src="{% static 'icons/pdf.png' %}" alt="pdf.png" class="w-[27px] h-[27px]">
+            </button>
+        </div>
+
+
+        <div
+        class="flex flex-col justify-center items-center text-[14px] p-2 gap-2 [&_a]:rounded [&_a]:p-1 [&_a]:w-full"
+        >
+        <a
+            href="{% url 'modificar_precio_stock' %}"
+            class="bg-yellow-400 text-black hover:bg-yellow-500"
+            >Modificar precios y stock</a
+        >
+        <a href="{% url 'crud_productos' %}" class="bg-green-800 hover:bg-green-900"
+            >Eliminar, editar o agregar productos</a
+        >
+        <a href="#" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
+        </div>
+    </div>
+</div>
+{% endblock%}

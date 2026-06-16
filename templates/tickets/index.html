@@ -44,7 +44,14 @@
     <div
       class="flex flex-col col-span-3 gap-3 [&_button]:rounded [&_button]:p-2 [&_button]:text-[20px] [&_button]:cursor-pointer [&_button]:shadow-2xl [&_button]:text-shadow-2xl"
     >
-      <button class="bg-sky-400 text-white hover:bg-sky-600">CREAR TICKET</button>
+      <button 
+        hx-post="tickets/ticketCreado"
+        hx-trigger="click"
+        hx-include="[name='metodoPago']"
+        hx-vals="js:{ costoTotal: costoTotal() }"
+        hx-target="#resultado_consulta"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="bg-sky-400 text-white hover:bg-sky-600">CREAR TICKET</button>
       <button
         hx-get="tickets/vaciarTicket"
         hx-trigger="click"
@@ -54,9 +61,20 @@
         VACIAR TICKET
       </button>
     </div>
-    <div class="text-[30px] text-center flex justify-center items-center col-span-7 text-shadow-lg font-bold">
-      <p>COSTO TOTAL: $</p>
-      <p id="costoTotalTexto" class="text-green-600"></p>
+    <div class="text-center flex flex-col justify-center items-center col-span-7">
+      <div class="text-[28px] flex text-shadow-lg font-bold">
+        <p>COSTO TOTAL: $</p>
+        <p id="costoTotalTexto" class="text-green-600"></p>
+      </div>
+      
+      <!--Inputs para el metodo de pago-->
+      <div class="flex justify-between items-center w-[50%]">
+        <input type="radio" name="metodoPago" id="efectivo" value="Efectivo" checked>
+        <label for="efectivo">Efectivo</label>
+        <input type="radio" name="metodoPago" id="transferencia" value="Transferencia">
+        <label for="transferencia">Transferencia</label>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -169,14 +187,14 @@
       class="flex flex-col justify-center items-center text-[14px] p-2 gap-2 [&_a]:rounded [&_a]:p-1 [&_a]:w-full"
     >
       <a
-        href="productos/modificar_precio_stock"
+        href="{% url 'modificar_precio_stock' %}"
         class="bg-yellow-400 text-black hover:bg-yellow-500"
         >Modificar precios y stock</a
       >
-      <a href="productos/crud_productos" class="bg-green-800 hover:bg-green-900"
+      <a href="{% url 'crud_productos' %}" class="bg-green-800 hover:bg-green-900"
         >Eliminar, editar o agregar productos</a
       >
-      <a href="#" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
+      <a href="{% url 'historial_tickets' %}" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
     </div>
   </div>
 </div>

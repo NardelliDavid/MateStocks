@@ -34,3 +34,16 @@ def validar_cantidad(cantidad): # VALIDA EL STOCK
         return True, cantidad
     except:
         return False, '<p class="text-red-600">La cantidad es erronea!</p>'
+    
+
+def msgError(mensaje):
+    inicio = '<p class="text-red-600">'
+    msg = mensaje
+    fin = '</p>'
+    return inicio+msg+fin
+
+def msgCorrecto(mensaje):
+    inicio = '<p class="text-green-600">'
+    msg = mensaje
+    fin = '</p>'
+    return inicio+msg+fin

@@ -1,0 +1,33 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block title %}Ticket creado{% endblock %} 
+
+{% block table %}
+<div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col relative">
+  
+</div>
+
+<div class="col-span-1 gap-3 flex flex-col justify-between">
+    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-center h-[9%]">
+        <h4 class="text-base underline">Historial de tickets</h4>
+        <a href="/" class="text-sm text-blue-500 underline decoration-blue-500 font-bold"><-- Volver al inicio</a>
+    </div>
+
+    <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-end h-[91%]">
+
+        <div
+        class="flex flex-col justify-center items-center text-[14px] p-2 gap-2 [&_a]:rounded [&_a]:p-1 [&_a]:w-full"
+        >
+        <a
+            href="{% url 'modificar_precio_stock' %}"
+            class="bg-yellow-400 text-black hover:bg-yellow-500"
+            >Modificar precios y stock</a
+        >
+        <a href="{% url 'crud_productos' %}" class="bg-green-800 hover:bg-green-900"
+            >Eliminar, editar o agregar productos</a
+        >
+        <a href="{% url 'historial_tickets' %}" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
