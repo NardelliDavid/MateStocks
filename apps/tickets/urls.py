@@ -10,5 +10,7 @@ urlpatterns = [
     path("tickets/vaciarTicket", views.vaciarTicket, name="vaciarTicket"),
     path("tickets/ticketCreado", views.ticketCreado, name='ticketCreado'),
     path("tickets/verTicket/<int:id_ticket>", views.verTicket, name="verTicket"),
-    path("tickets/historial_tickets", views.historial_tickets, name="historial_tickets")
+    path("tickets/historial_tickets", views.historial_tickets, name="historial_tickets"),
+    path("tickets/recargarTabla_tickets", views.recargarTabla_tickets, name="recargarTabla_tickets"),
+    path("tickets/descargar_ticket/<int:id_ticket>", views.descargar_ticket, name="descargar_ticket")
 ]

@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar ticket</title>
+</head>
+
+<body>
+
+    <div id="div-imprimir">
+        <div class="subdiv1">
+            <h1>==================================================</h1>
+            <p>SUPERCHINO2</p>
+            <p>Carlos tejedor 824</p>
+            <p>Tel: 12-3456-7890</p>
+            <p>CUIT: 12-34567890-0</p>
+            <h1>==================================================</h1>
+        </div>
+        <div class="subdiv2">
+            <p id="n-ticket" style="display: none;">{{ ticket.id }}</p>
+            <p>Ticket N°: {{ ticket.id }}</p>
+            <p>Fecha y hora: {{ ticket.fecha_y_hora }}</p>
+            <h1>--------------------------------------------------</h1>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <td>DESCRIPCION</td>
+                    <td>CANTIDAD</td>
+                    <td>PRECIO</td>
+                    <td>SUBTOTAL</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in detalles_ticket %}
+                    <tr>
+                        <td class="desc">{{ producto.descripcion }}</td>
+                        <td>{{ producto.cantidad }}</td>
+                        <td>{{ producto.precio_unitario }}</td>
+                        <td>ACA VA EL SUBTOTAL</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div>
+            <h1>--------------------------------------------------</h1>
+            <p id="costoTotal"></p>
+            <p>Metodo de pago: {{ ticket.metodo_pago }}</p>
+        </div>
+        <div>
+            <h1>==================================================</h1>
+            <h1>GRACIAS POR SU COMPRA<br>
+                VUELVA PRONTO</h1>
+            <h1>==================================================</h1>
+        </div>
+    </div>
+
+    <style>
+        @media print {
+            @page {
+                margin: 0;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        * {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        thead {
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+        }
+        td, th {
+            text-align: center;
+        }
+        .desc {
+            max-width: 150px;
+        }
+        div, .subdiv1 {
+            width: 430px;
+            max-width: 430px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #div-imprimir {
+            min-height: 425px;
+        }
+        p, h1 {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'javascript/tickets/costoTotal.js' %}"></script>
+    <script>
+        actualizarTotalesTicket() // Para mostrar el total del ticket
+        
+        const div = document.getElementById("div-imprimir")
+        const nombrePDF = "ticket"+document.getElementById("n-ticket").textContent+".pdf"
+
+        // Opciones a la hora de descargar el ticket
+        var opt = {
+            filename:     nombrePDF,
+            image:        { type: 'png' },
+            html2canvas:  { scale: 2 },
+            jsPDF: { unit: 'mm', format: [div.scrollWidth * 0.2645, (div.scrollHeight * 0.2645)+1 ] }
+            };
+
+        // Imprime el ticket y luego redirige a la pagina anterior
+        html2pdf().set(opt).from(div).save().then(() => {
+           window.location.replace("{% url 'verTicket' ticket.id %}");
+        })
+        
+    </script>
+
+</body>
+</html>

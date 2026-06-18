@@ -1,16 +1,65 @@
 {% extends "base.html" %} 
 {% load static %} 
-{% block title %}Ticket creado{% endblock %} 
+{% block title %}Historial de tickets{% endblock %} 
 
 {% block table %}
 <div class="col-span-3 border border-collapse overflow-y-visible overflow-x-hidden pr-3 flex flex-col relative">
-  
+  <table class="w-full font-mono border-separate border-spacing-[1px] text-center">
+    <thead>
+        <tr class="[&_th]:border [&_th]:text-[12px]">
+            <th>N° de ticket</th>
+            <th>Metodo de pago</th>
+            <th>Total</th>
+            <th>Fecha y hora</th>
+            <th class="w-[100px]">Ver ticket</th>
+        </tr>
+    </thead>
+    <tbody id="tbodytickets" class="[&_td]:border [&_td]:text-[12px]">
+        {% include 'tickets/partials/tbody_historial_tickets.html' %}
+    </tbody>
+  </table>
 </div>
 
 <div class="col-span-1 gap-3 flex flex-col justify-between">
     <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-center h-[9%]">
         <h4 class="text-base underline">Historial de tickets</h4>
         <a href="/" class="text-sm text-blue-500 underline decoration-blue-500 font-bold"><-- Volver al inicio</a>
+    </div>
+
+    <script src="{% static 'javascript/tickets/ordenar_tickets.js' %}"></script>
+    <div class="relative p-1 bg-gray-800 text-white text-center rounded grid gap-3">
+      
+        <input type="hidden" name="caso" id="metodo_p" value="fechaDescendente">
+        <div class="text-[11px] m-0 pl-1 pr-1 flex w-full justify-around ">
+            <p>Ordenar por: </p>
+            
+            <p id="metodo_ordenamiento" class="ml-2 mr-2 font-bold">FECHA: D</p>
+            <img id="trianguloMenu" onclick="mostrar_ordenar_por()" src="{% static 'icons/triangulo.png' %}" alt="triangulo.png" class="w-[12px] cursor-pointer transition-transform duration-50">
+        </div>
+
+        <ul id="menu_ordenar" class="absolute w-full bg-gray-700 border top-full border-gray-600 rounded hidden">
+            <li hx-get="{% url 'recargarTabla_tickets' %}"
+                hx-trigger="click"
+                hx-target="#tbodytickets"
+                hx-vals='{"caso":"fechaAscendente"}'
+             onclick="mostrar_ordenar_por(); cambiar_texto_p('fechaAscendente')" class="text-[12px] cursor-pointer hover:text-blue-400 mt-2 mb-2">Fecha: Ascendente</li>
+            <li hx-get="{% url 'recargarTabla_tickets' %}"
+                hx-trigger="click"
+                hx-target="#tbodytickets"
+                hx-vals='{"caso":"fechaDescendente"}' 
+             onclick="mostrar_ordenar_por(); cambiar_texto_p('fechaDescendente')" class="text-[12px] cursor-pointer hover:text-blue-400 mt-2 mb-2">Fecha: Descendente</li>
+            <li hx-get="{% url 'recargarTabla_tickets' %}"
+                hx-trigger="click"
+                hx-target="#tbodytickets"
+                hx-vals='{"caso":"totalMayor"}'
+             onclick="mostrar_ordenar_por(); cambiar_texto_p('totalMayor')" class="text-[12px] cursor-pointer hover:text-blue-400 mt-2 mb-2">TOTAL: (D) Mayor a menor</li>
+            <li hx-get="{% url 'recargarTabla_tickets' %}"
+                hx-trigger="click"
+                hx-target="#tbodytickets"
+                hx-vals='{"caso":"totalMenor"}'
+             onclick="mostrar_ordenar_por(); cambiar_texto_p('totalMenor')" class="text-[12px] cursor-pointer hover:text-blue-400 mt-2 mb-2">TOTAL: (A) Menor a mayor</li>
+            
+        </ul>
     </div>
 
     <div class="bg-gray-800 text-white text-center rounded flex flex-col justify-end h-[91%]">
@@ -26,7 +75,6 @@
         <a href="{% url 'crud_productos' %}" class="bg-green-800 hover:bg-green-900"
             >Eliminar, editar o agregar productos</a
         >
-        <a href="{% url 'historial_tickets' %}" class="bg-blue-500 hover:bg-blue-600">Ver historial de tickets</a>
         </div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 #from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .validators import *
 from django.http import HttpResponse
 from django.views.decorators.cache import never_cache
@@ -262,9 +262,44 @@ def verTicket(request, id_ticket):
     
 def historial_tickets(request):
     if request.method == "GET":
+        tickets = Tickets.objects.all().order_by('-fecha_y_hora')
 
         return render(request, "tickets/historial_tickets.html", {
-            "tickets": "hola"
+            "tickets": tickets
         })
+    
+def recargarTabla_tickets(request): # Para recargar la tabla mediante HTMX y ver los productos ordenados
+    if request.method == "GET":
+        if request.headers.get('HX-Request'):
+            ordenamientos = {
+                "fechaAscendente": "fecha_y_hora",
+                "fechaDescendente": "-fecha_y_hora",
+                "totalMayor":"total",
+                "totalMenor":"-total"
+            }
+
+            caso = request.GET.get("caso")
+            orden = ordenamientos.get(caso)
+
+            if orden:
+                tickets = Tickets.objects.all().order_by(orden)
+            else:
+                tickets = Tickets.objects.all()
+
+            return render(request, "tickets/partials/tbody_historial_tickets.html", {
+                "tickets": tickets
+            })
+        
+def descargar_ticket(request, id_ticket):
+    ticket = Tickets.objects.get(id=id_ticket)
+    detalles_ticket = Detalle_ticket.objects.filter(id_ticket=id_ticket)
+
+    return render(request, 'tickets/partials/descargar_ticket.html', {
+        "ticket": ticket,
+        "detalles_ticket": detalles_ticket
+    })
+    
+    
+
 
     

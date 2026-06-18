@@ -1,0 +1,16 @@
+{% load static %}
+        {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.metodo_pago }}</td>
+                <td>${{ ticket.total }}</td>
+                <td>{{ ticket.fecha_y_hora|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <div class="flex justify-center">
+                        <a href="{% url 'verTicket' ticket.id %}" class="m-0 p-0">
+                            <img src="{% static 'icons/ojo-blue.png' %}" alt="ojo-blue.png" width="20px">
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
