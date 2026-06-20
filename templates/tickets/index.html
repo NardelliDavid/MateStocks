@@ -112,26 +112,37 @@
         </div>
 
         <!--INPUTS QUE BUSCAN EL PRODUCTO PARA AGREGAR AL TICKET-->
-        <input
+        <div class="flex bg-gray-200 text-black rounded p-1">
+          <input id="input-codigoBarras"
           hx-get="tickets/buscar_producto_ticket"
-          hx-trigger="keyup delay:400ms"
+          hx-trigger="keyup delay:400ms, change"
           hx-target="#resultadoBusqueda"
           hx-include="[name='descripcion']"
           type="text"
           name="codigo_barra"
           placeholder="Codigo de barras..."
-          class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400"
-        />
-        <input
+          class="w-full text-[14px]"
+          />
+          <img src="{% static 'icons/borrar.png' %}" alt="borrar.png"
+            onclick="limpiar_input(2)"
+            class="w-[20px] cursor-pointer bg-gray-400 ml-1 p-[2px] rounded">
+        </div>
+        
+        <div class="flex bg-gray-200 text-black rounded p-1">
+          <input id="input-descripcion"
           hx-get="tickets/buscar_producto_ticket"
-          hx-trigger="keyup delay:400ms"
+          hx-trigger="keyup delay:400ms, change"
           hx-target="#resultadoBusqueda"
           hx-include="[name='codigo_barra']"
           type="text"
           name="descripcion"
           placeholder="Descripcion..."
-          class="w-full bg-gray-200 text-black rounded p-1 text-[14px] border border-gray-400"
-        />
+          class="w-full text-[14px]"
+          />
+          <img src="{% static 'icons/borrar.png' %}" alt="borrar.png"
+            onclick="limpiar_input(1)"
+            class="w-[20px] cursor-pointer bg-gray-400 ml-1 p-[2px] rounded">
+        </div>
 
         <!--Input para la cantidad del mismo producto-->
         <div
@@ -167,6 +178,7 @@
       </form>
 
       <!--MUESTRA LOS PRODUCTOS ENCONTRADOS POR LOS INPUTS-->
+      <script src="{% static 'javascript/tickets/autocompletar_busqueda.js' %}"></script>
       <div class="w-[100%] pl-2 pr-2">
         <div
           id="resultadoBusqueda"

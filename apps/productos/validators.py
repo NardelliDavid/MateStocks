@@ -8,7 +8,7 @@ def validar_codigo_barras(codigo_barras): # VALIDA EL CODIGO DE BARRAS
         return True, codigo_barras
     else:
         if len(codigo_barras.strip()) > 50:
-            return False, '<p class="text-red-600">El codigo de barras es demasiado grande!</p>'
+            return False, msgError('El codigo de barras es demasiado grande!')
         else:
             codigo_barras = codigo_barras.strip().replace(" ","")
             if codigo_barras == "None":
@@ -17,10 +17,10 @@ def validar_codigo_barras(codigo_barras): # VALIDA EL CODIGO DE BARRAS
 
 def validar_descripcion(descripcion): # VALIDA LA DESCRIPCION
     if descripcion.strip() == "":
-        return False, '<p class="text-red-600">La descripcion del producto esta vacia!</p>'
+        return False, msgError('La descripcion del producto esta vacia!')
     else:
         if len(descripcion.strip()) > 150:
-            return False, '<p class="text-red-600">La descripcion del producto es muy grande!</p>'
+            return False, msgError('La descripcion del producto es muy grande!')
         else:
             descripcion = descripcion.strip()
             return True, descripcion
@@ -29,34 +29,34 @@ def validar_precio(precio): # VALIDA EL PRECIO
     try:
         precio = Decimal(precio.replace(" ",""))
         if precio <= 0:
-            return False, '<p class="text-red-600">El precio no puede ser negativo!</p>'
+            return False, msgError('El precio no puede ser negativo!')
         if precio > Decimal("99999999.99"):
-            return False, '<p class="text-red-600">El precio es demasiado grande!</p>'
+            return False, msgError('El precio es demasiado grande!')
         return True, precio
     except:
-        return False, '<p class="text-red-600">El precio esta vacio o es erroneo! Utilize puntos en vez de comas para marcar decimales!</p>'
+        return False, msgError('El precio esta vacio o es erroneo! Utilize puntos en vez de comas para marcar decimales!')
      
 def validar_stock(stock): # VALIDA EL STOCK
     try:
         stock = int(stock.replace(" ",""))
         if stock < 0:
-            return False, '<p class="text-red-600">El stock no puede ser negativo!</p>'
+            return False, msgError('El stock no puede ser negativo!')
         if stock > 99999:
-            return False, '<p class="text-red-600">El stock es demasiado grande!</p>'
+            return False, msgError('El stock es demasiado grande!')
         return True, stock
     except:
-        return False, '<p class="text-red-600">El stock esta vacio o es erroneo!</p>'
+        return False, msgError('El stock esta vacio o es erroneo!')
 
 def validar_stock_minimo(stock_minimo): # VALIDA EL STOCK MINIMO
     try:
         stock_minimo = int(stock_minimo.replace(" ",""))
         if stock_minimo <= 0:
-            return False, '<p class="text-red-600">El stock minimo no puede ser negativo!</p>'
+            return False, msgError('El stock minimo no puede ser negativo!')
         if stock_minimo > 99999:
-            return False, '<p class="text-red-600">El stock minimo es demasiado grande!</p>'
+            return False, msgError('El stock minimo es demasiado grande!')
         return True, stock_minimo
     except:
-        return False, '<p class="text-red-600">El stock minimo esta vacio o es erroneo!</p>'
+        return False, msgError('El stock minimo esta vacio o es erroneo!')
     
 # ------------------------------------------------------------------------------------------
 
@@ -107,3 +107,16 @@ def validar_datos_productos_EDIT(codigo_barras, descripcion,stock_minimo):
     }
 
     return True, datos_limpios
+
+# Para devolver mensajes de error o exito
+def msgError(mensaje):
+    inicio = '<p class="text-red-600">'
+    msg = mensaje
+    fin = '</p>'
+    return inicio+msg+fin
+
+def msgCorrecto(mensaje):
+    inicio = '<p class="text-green-600">'
+    msg = mensaje
+    fin = '</p>'
+    return inicio+msg+fin

@@ -8,7 +8,7 @@ def validar_codigo_barras(codigo_barras): # VALIDA EL CODIGO DE BARRAS
         return True, codigo_barras
     else:
         if len(codigo_barras.strip()) > 50:
-            return False, '<p class="text-red-600">El codigo de barras es demasiado grande!</p>'
+            return False, msgError('El codigo de barras es demasiado grande!')
         else:
             codigo_barras = codigo_barras.strip().replace(" ","")
             if codigo_barras == "None":
@@ -17,7 +17,7 @@ def validar_codigo_barras(codigo_barras): # VALIDA EL CODIGO DE BARRAS
 
 def validar_descripcion(descripcion): # VALIDA LA DESCRIPCION
     if len(descripcion.strip()) > 150:
-        return False, '<p class="text-red-600">La descripcion del producto es muy grande!</p>'
+        return False, msgError('La descripcion del producto es muy grande!')
     else:
         descripcion = descripcion.strip()
         if descripcion == "":
@@ -28,12 +28,12 @@ def validar_cantidad(cantidad): # VALIDA EL STOCK
     try:
         cantidad = int(cantidad.replace(" ",""))
         if cantidad <= 0:
-            return False, '<p class="text-red-600">La cantidad no puede ser menor a 1!</p>'
+            return False, msgError('La cantidad no puede ser menor a 1!')
         if cantidad > 99999:
-            return False, '<p class="text-red-600">La cantidad es demasiado grande!</p>'
+            return False, msgError('La cantidad es demasiado grande!')
         return True, cantidad
     except:
-        return False, '<p class="text-red-600">La cantidad es erronea!</p>'
+        return False, msgError('La cantidad es erronea!')
     
 
 def msgError(mensaje):

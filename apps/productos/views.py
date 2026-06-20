@@ -58,7 +58,7 @@ def agregar_producto(request):
 
                 # SI UNO DE LOS 2 ES VERDADERO ENVIA UN MENSAJE DE ERROR
                 if existe_cod_barras or existe_descripcion:
-                    return HttpResponse('<p class="text-red-600">Este producto ya existe en la base de datos!</p>')
+                    return HttpResponse(msgError('Este producto ya existe en la base de datos!'))
                 else:
                     # AGREGA EL PRODUCTO A LA BBDD
                     Producto.objects.create(
@@ -69,11 +69,11 @@ def agregar_producto(request):
                         stock_minimo = resultado["stock_minimo"]
                     )
                     # MENSAJE DE EXITO AL AGREGAR PRODUCTO
-                    response = HttpResponse('<p class="text-green-600">'+str(resultado["descripcion"])+' agregado/s con exito!</p>')
+                    response = HttpResponse(msgCorrecto(str(resultado["descripcion"])+' agregado/s con exito!'))
                     response["HX-Trigger"] = "recargarTabla" # Llama al evento "recargarTabla" cuando la respuesta llega a la plantilla
                     return response
             except Exception as error:
-                return HttpResponse('<p class="text-red-600">Error al agregar producto: '+str(error)+'</p>')
+                return HttpResponse(msgError('Error al agregar producto: '+str(error)))
     return redirect('crud_productos')
 
 def eliminar_producto(request):
@@ -84,13 +84,13 @@ def eliminar_producto(request):
                 consulta = Producto.objects.filter(id=id_producto)
                 if consulta.exists(): # Si encuentra objetos con el mismo ID los borra
                     consulta.delete()
-                    response = HttpResponse('<p class="text-green-600"> Producto eliminado correctamente!</p>')
+                    response = HttpResponse(msgCorrecto('Producto eliminado correctamente!'))
                     response["HX-Trigger"] = "recargarTabla" # Activa el evento recargar tabla cuando es enviada la respuesta
                 else:
-                    response = HttpResponse('<p class="text-red-600">Error al intentar eliminar un producto: No se a encontrado en la base de datos.</p>')
+                    response = HttpResponse(msgError('Error al intentar eliminar un producto: No se a encontrado en la base de datos.'))
                 return response
             except Exception as error:
-                return HttpResponse("ERROR AL ELIMINAR PRODUCTO: "+str(error))
+                return HttpResponse(msgError("ERROR AL ELIMINAR PRODUCTO: "+str(error)))
     return redirect('crud_productos')
             
 def editar_producto(request):
@@ -110,16 +110,16 @@ def editar_producto(request):
                 # Si encuentra un producto que coincide con los 3 datos devuelve un mensaje de error
                 consulta = Producto.objects.filter(id=id_producto, codigo_barras=resultado2["codigo_barras"], descripcion=resultado2["descripcion"], stock_minimo=resultado2["stock_minimo"])
                 if consulta.exists():
-                    return HttpResponse('<p class="text-red-600">No modificaste ningun dato al editar el producto!</p>')
+                    return HttpResponse(msgError('No modificaste ningun dato al editar el producto!'))
                 
                 # Verifica si hay otro producto con el mismo codigo de barras o descripcion
                 if resultado2["codigo_barras"] is not None:
                     consulta1 = Producto.objects.filter(codigo_barras=resultado2["codigo_barras"]).exclude(id=id_producto).exists()
                     if consulta1:
-                        return HttpResponse('<p class="text-red-600">Este codigo de barras esta siendo utilizado por otro producto!</p>')
+                        return HttpResponse(msgError('Este codigo de barras esta siendo utilizado por otro producto!'))
                 consulta2 = Producto.objects.filter(descripcion=resultado2["descripcion"]).exclude(id=id_producto).exists()
                 if consulta2:
-                    return HttpResponse('<p class="text-red-600">Esta descripcion pertenece a otro producto!</p>')
+                    return HttpResponse(msgError('Esta descripcion pertenece a otro producto!'))
                 
                 # Si encuentra un producto con el mismo id modifica los datos
                 consulta = Producto.objects.filter(id = id_producto)
@@ -129,13 +129,13 @@ def editar_producto(request):
                         descripcion=resultado2["descripcion"], 
                         stock_minimo=resultado2["stock_minimo"]
                         )
-                    response = HttpResponse('<p class="text-green-600"> Producto modificado correctamente!</p>')
+                    response = HttpResponse(msgCorrecto(' Producto modificado correctamente!'))
                     response["HX-Trigger"] = "recargarTabla" # Activa el evento recargar tabla cuando es enviada la respuesta
                     return response
                 else:
-                    return HttpResponse('<p class="text-red-600">Error al intentar editar un producto: No se a encontrado en la base de datos.</p>')
+                    return HttpResponse(msgError('Error al intentar editar un producto: No se a encontrado en la base de datos.'))
             except Exception as error:
-                return HttpResponse('<p class="text-red-600">Error al intentar editar un producto: '+str(error)+'</p>')
+                return HttpResponse(msgError('Error al intentar editar un producto: '+str(error)))
     return redirect('crud_productos')
 
 # ---------------------------------------
@@ -199,7 +199,7 @@ def modificar_precio_stock_CRUD(request):
                 validez_stock_viejo, resultado_stock_viejo = validar_stock(stock_viejo)
                 validez_precio_viejo, resultado_precio_viejo = validar_precio(precio_viejo)
                 if resultado_stock_nuevo == resultado_stock_viejo and resultado_precio_nuevo == resultado_precio_viejo:
-                    return HttpResponse('<p class="text-red-600">No cambiaste el precio ni el stock!</p>')
+                    return HttpResponse(msgError('No cambiaste el precio ni el stock!'))
 
                 # Verifica si existen productos con el mismo id en la base de datos
                 consulta = Producto.objects.filter(id=id_producto).update(
@@ -209,11 +209,11 @@ def modificar_precio_stock_CRUD(request):
                     )
                 if consulta > 0:
                     # metodo_p = request.POST.get("metodo_p")
-                    response = HttpResponse('<p class="text-green-600">Precio y Stock modificados correctamente!</p>')
+                    response = HttpResponse(msgCorrecto('Precio y Stock modificados correctamente!'))
                     response["HX-Trigger"] = "recargarTablaMPS"
                     return response
                 else:
-                    return HttpResponse('<p class="text-red-600">ERROR: El producto no existe en la base de datos!</p>')
+                    return HttpResponse(msgError('ERROR: El producto no existe en la base de datos!'))
             except Exception as error:
-                return HttpResponse('<p class="text-red-600">Error al intentar editar un producto: '+str(error)+'</p>')
+                return HttpResponse(msgError('Error al intentar editar un producto: '+str(error)))
     return redirect('modificar_precio_stock')

@@ -1,5 +1,5 @@
 #from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .validators import *
 from django.http import HttpResponse
 from django.views.decorators.cache import never_cache
@@ -50,12 +50,16 @@ def buscar_producto_ticket(request):
             respuesta = '<div class="bg-white w-[100%] max-h-[70px] overflow-auto rounded">'
             if producto.exists():
                 for i in producto:
-                    respuesta += '<p class="border-b border-gray-200">'+str(i.codigo_barras)+'<br>'+str(i.descripcion)+'</p>'
+                    respuesta += (f'<div '
+                                  f'onclick="autocompletar_busqueda(\'{i.codigo_barras}\',\'{i.descripcion}\')" '
+                                  f'class="border-b border-gray-200 cursor-pointer hover:bg-gray-100"><p class="text-red-600">{i.codigo_barras}<p/><p>{i.descripcion}</p></div>')
                 respuesta += '</div>'
                 return HttpResponse(respuesta)
             else:
                 respuesta += "No hay productos que coincidan en la base de datos!</div>"
                 return HttpResponse(respuesta)
+            
+    return redirect("/")
 
 def agregar_producto_ticket(request):
     if request.method == "POST":
@@ -149,6 +153,8 @@ def agregar_producto_ticket(request):
                 response = HttpResponse(msgCorrecto("Producto agregado correctamente al ticket!"))
                 response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
                 return response
+            
+    return redirect("/")
 
 
 def recargarTablaIndex(request): # EVENTO RECARGAR TABLA AL AGREGAR UN PRODUCTO AL TICKET
@@ -158,7 +164,8 @@ def recargarTablaIndex(request): # EVENTO RECARGAR TABLA AL AGREGAR UN PRODUCTO 
             return render(request, "tickets/partials/tbody_index.html", {
                 "sesionProductos": sesionProductos
             })
-        
+    
+    return redirect("/")
 
 def quitarProductoDelTicket(request): # Quita el producto del ticket
     if request.method == "GET":
@@ -182,6 +189,8 @@ def quitarProductoDelTicket(request): # Quita el producto del ticket
             response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
             return response
         
+    return redirect("/")
+        
 def vaciarTicket(request): # Vacia el ticket que estamos haciendo
     if request.method == "GET":
         if request.headers.get('HX-Request'):
@@ -190,6 +199,8 @@ def vaciarTicket(request): # Vacia el ticket que estamos haciendo
             response = HttpResponse(msgCorrecto("Ticket vaciado!"))
             response["HX-Trigger"] = "recargarTablaTicket" # Evento para recargar la tabla
             return response
+        
+    return redirect("/")
 
 
 
