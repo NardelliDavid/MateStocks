@@ -50,10 +50,10 @@ def buscar_producto_ticket(request):
             respuesta = '<div class="bg-white w-[100%] max-h-[70px] overflow-auto rounded">'
             if producto.exists():
                 for i in producto:
-                    respuesta += (f'<div '
+                    respuesta += (f'<p '
                                   f'onclick="autocompletar_busqueda(\'{i.codigo_barras}\',\'{i.descripcion}\')" '
-                                  f'class="border-b border-gray-200 cursor-pointer hover:bg-gray-100"><p class="text-red-600">{i.codigo_barras}<p/><p>{i.descripcion}</p></div>')
-                respuesta += '</div>'
+                                  f'class="border-b border-gray-200 cursor-pointer hover:bg-gray-100">'+str(i.codigo_barras)+'<br>'+str(i.descripcion)+'</p>')
+                    
                 return HttpResponse(respuesta)
             else:
                 respuesta += "No hay productos que coincidan en la base de datos!</div>"
