@@ -1,4 +1,4 @@
-#MateStocks
+# MateStocks
 
 Aplicacion web desarrollada con Django, HTMX y TailwindCSS.
 Permite la gestion de productos, stock y ventas guardando un historial de las mismas (tickets), permitiendo visualizarlos y descargarlos en formato PDF con la libreria **html2pdf.js** y asi poder imprimirlos.
