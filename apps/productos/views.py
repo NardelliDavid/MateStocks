@@ -5,6 +5,7 @@ from .validators import *
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 import openpyxl
+from pathlib import Path
 
 @never_cache
 
@@ -144,6 +145,12 @@ def leer_xlsx_con_productos(request): # Obtiene los productos del .xlsx y los ca
         if request.headers.get('HX-Request'): 
             try:
                 archivo_xlsx = request.FILES['archivo_xlsx']
+
+                # Verifica que el archivo subido sea un .xlsx
+                extension = Path(archivo_xlsx.name).suffix.lower()
+                if extension != '.xlsx':
+                    return HttpResponse(msgError("El archivo tiene que ser un .xlsx!"))
+
 
                 # Abrimos el archivo para lectura
                 wb = openpyxl.load_workbook(archivo_xlsx, data_only=True)
