@@ -31,6 +31,45 @@
     </table>
 </div>
 
+<!--Div que contiene el boton para subir el excel-->
+<div id="upload_xlsx" class="hidden absolute top-0 left-0 w-full h-full bg-gray-900/50">
+    <div class="relative bg-white border border-gray-400 p-3 pt-4 max-w-[500px] flex flex-col justify-center items-center gap-2
+        top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <img onclick="mostrar_boton_importar_xlsx()" src="{% static 'icons/x.png' %}" alt="x.png" class="w-[20px] bg-gray-300 rounded p-[2px] cursor-pointer absolute right-1 top-1">
+        <p class="text-center">Para agregar productos mediante un archivo <b>Excel</b> con extension <b>.xlsx</b> debe seguir el siguiente formato de celdas:</p>
+        <table class="w-full [&_th]:border text-[12px]">
+            <thead>
+                <tr>
+                    <th>Codigo de barras:<br>A1-A∞</th>
+                    <th>Descripcion:<br>B1-B∞</th>
+                    <th>Precio:<br>C1-C∞</th>
+                    <th>Stock:<br>D1-D∞</th>
+                    <th>Stock minimo:<br>E1-E∞</th>
+                </tr>
+            </thead>
+        </table>
+        <p class="text-center">Si algun dato esta mal en la planilla los productos <b>NO SE CARGARAN</b>. Desde la primera fila hasta la ultima tienen que ser <b>PRODUCTOS</b>, sin encabezados diciendo si es codigo de barras, descripcion, etc.</p>
+
+        <form hx-post="{% url 'leer_xlsx_con_productos' %}"
+            hx-encoding="multipart/form-data"
+            hx-target="#resultado_consulta"
+         class="flex justify-center items-center flex-col">
+            {% csrf_token %}
+            <div class="flex gap-2 justify-center items-center">
+                <p class="font-bold">Seleccione el archivo .xlsx:</p>
+                <label for="archivo_xlsx" class="font-bold">
+                    <div class="bg-green-600 hover:bg-green-500 border border-green-400 p-1 rounded cursor-pointer">
+                        <img src="{% static 'icons/upload.png' %}" alt="upload.png" class="w-[30px]">
+                    </div>
+                </label>
+                <input type="file" name="archivo_xlsx" id="archivo_xlsx" accept=".xlsx" class="hidden">
+            </div>
+
+            <button onclick="mostrar_boton_importar_xlsx()" class="bg-sky-500 hover:bg-sky-400 border border-blue-500 cursor-pointer p-1 rounded">Cargar productos</button>
+        </form>
+    </div>
+</div>
+
 <div class="col-span-1 gap-3 flex flex-col justify-between ">
     <!--TITULO Y VOLVER-->
     <div class="p-3 bg-gray-800 text-white text-center rounded grid gap-3 h-[15%]">
@@ -51,9 +90,19 @@
         </form>
 
         <!--Consola que muestra los resultados de las consultas-->
-        <div id="resultado_consulta" class="m-2 bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
-            <p class="text-green-600">Resultado de las consultas aqui...</p>
+        <div class="p-2 grid gap-2">
+            <div id="resultado_consulta" class="bg-black border border-white font-serif text-start text-[12px] min-h-[80px] max-h-[100px]">
+                <p class="text-green-600">Resultado de las consultas aqui...</p>
+            </div>
+            <!--Boton para mostrar la importacion de productos por medio de un .xlsx-->
+            <script src="{% static 'javascript/tickets/importar_xlsx.js' %}"></script>
+            <button onclick="mostrar_boton_importar_xlsx()"
+                class="bg-green-800 p-1 rounded border border-green-700 cursor-pointer flex justify-center items-center gap-3 hover:bg-green-700">
+                <p class="text-[15px] font-bold">Importar .xlsx</p>
+                <img src="{% static 'icons/excel.png' %}" alt="excel.png" class="w-[25px]">
+            </button>
         </div>
+        
 
         <!--Formulario para agregar productos-->
         <form hx-post="agregar_producto" 

@@ -9,5 +9,6 @@ urlpatterns = [
     path("partials/recargarTablaHTMX_MPS", views.recargarTablaHTMX_MPS, name="recargarTablaHTMX_MPS"),
     path("eliminar_producto", views.eliminar_producto, name="eliminar_producto"),
     path("editar_producto", views.editar_producto, name="editar_producto"),
-    path("modificar_precio_stock_CRUD", views.modificar_precio_stock_CRUD, name="modificar_precio_stock_CRUD")
+    path("modificar_precio_stock_CRUD", views.modificar_precio_stock_CRUD, name="modificar_precio_stock_CRUD"),
+    path("leer_xlsx_con_productos", views.leer_xlsx_con_productos, name="leer_xlsx_con_productos")
 ]

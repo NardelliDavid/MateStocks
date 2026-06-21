@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from .validators import *
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
+import openpyxl
 
 @never_cache
 
@@ -137,6 +138,91 @@ def editar_producto(request):
             except Exception as error:
                 return HttpResponse(msgError('Error al intentar editar un producto: '+str(error)))
     return redirect('crud_productos')
+
+def leer_xlsx_con_productos(request): # Obtiene los productos del .xlsx y los carga a la base de datos
+    if request.method == "POST":
+        if request.headers.get('HX-Request'): 
+            try:
+                archivo_xlsx = request.FILES['archivo_xlsx']
+
+                # Abrimos el archivo para lectura
+                wb = openpyxl.load_workbook(archivo_xlsx, data_only=True)
+                hoja = wb.active
+
+                # Recorro el archivo desde la primera fila (columnas A-E)
+                productos_nuevos = []
+                for fila in hoja.iter_rows(min_row=1, min_col=1, max_col=5, values_only=True):
+                    # Ignora las filas completamente vacias
+                    if all(v is None for v in fila):
+                        continue
+
+                    producto = {
+                        "codigo_barras": fila[0],
+                        "descripcion": fila[1],
+                        "precio": fila[2],
+                        "stock": fila[3],
+                        "stock_minimo": fila[4]
+                    }
+                    productos_nuevos.append(producto)
+                    
+                try:
+                    validez, productos_validados = validar_datos_productos_XLSX(productos_nuevos)
+                    if not validez:
+                        return HttpResponse(msgError("Error al cargar los productos del archivo .xlsx! verifique los datos de cada producto."))
+                    
+                    # Obtiene todos los códigos del XLSX
+                    codigos = [
+                        p["codigo_barras"]
+                        for p in productos_validados
+                        if p["codigo_barras"] is not None
+                    ]
+                    if len(codigos) != len(set(codigos)): # Verifica que no hayan codigos de barras repetidos en el XLSX
+                        return HttpResponse(
+                            msgError("Hay códigos de barras repetidos en el archivo XLSX.")
+                        )
+                    descripciones = [p["descripcion"] for p in productos_validados] # Obtiene todas las descripciones de XLSX
+                    if len(descripciones) != len(set(descripciones)): # Verifica que no hayan descripciones repetidas en el XLSX
+                        return HttpResponse(
+                            msgError("Hay descripciones repetidas en el archivo XLSX.")
+                        )
+
+                    # Verifica si existen productos con el mismo codigo de barras o descripcion en la base de datos
+                    if (
+                        Producto.objects.filter(codigo_barras__in=codigos).exists()
+                        or Producto.objects.filter(descripcion__in=descripciones).exists()
+                    ):
+                        return HttpResponse(
+                            msgError("Hay uno o más productos que ya están cargados en la base de datos!")
+                        )
+
+                    # Carga todos los productos a la base de datos
+                    productos = [
+                        Producto(
+                            codigo_barras=p["codigo_barras"],
+                            descripcion=p["descripcion"],
+                            precio=p["precio"],
+                            stock=p["stock"],
+                            stock_minimo=p["stock_minimo"],
+                        )
+                        for p in productos_validados
+                    ]
+                    Producto.objects.bulk_create(productos)
+                        
+                    # Retorna un mensaje y un evento
+                    response = HttpResponse(msgCorrecto("Productos cargados correctamente desde el archivo .xlsx!"))  
+                    response["HX-Trigger"] = "recargarTabla"
+                    return response
+                except Exception as e:
+                    return HttpResponse("TODO MAL 2:"+str(e))
+
+
+            except Exception as e:
+                return HttpResponse("TODO MAL:"+str(e))
+
+
+
+            return HttpResponse("TODO BIEN:")
+    
 
 # ---------------------------------------
 
